@@ -17,7 +17,8 @@ class IamHandler(metaclass=Singleton):
             "name": name,
             "code": code
         }
-        call_api(self.url + "/role_groups",method='post', json=body, token_iam=HEADER["authorization"])
+        call_api(self.url + "/role_groups", method='post',
+                 json=body, token_iam=HEADER["authorization"])
 
     def get_role_group_id(self, email):
         response = call_api(
@@ -28,14 +29,23 @@ class IamHandler(metaclass=Singleton):
             token_iam=HEADER["authorization"]
         )
         return response.json().get("items")[0].get("id")
-    
+
+    def add_role_group(self, user_id, role_group_ids):
+        call_api(
+            f"https://id-admin-dgl.vnpayapis.com/api/v1.0/users/{user_id}/role_groups",
+            method="post",
+            json={"user_id": user_id,
+                  "role_group_ids": role_group_ids},
+            token_iam=HEADER["authorization"]
+        )
+
     def add_role_sale_sale_leader_role(self, role_group_id):
         call_api(
             f"https://id-admin-dgl.vnpayapis.com/api/v1.0/role_groups/{role_group_id}/roles",
             method="post",
             json={
                 "role_group_id": role_group_id,
-                "role_ids": [36,37]
+                "role_ids": [36, 37]
             },
             token_iam=HEADER["authorization"]
         )
@@ -44,11 +54,11 @@ class IamHandler(metaclass=Singleton):
         call_api(
             f"https://id-admin-dgl.vnpayapis.com/api/v1.0/role_groups/{role_group_id}",
             method="put",
-            json={"attributes":{"orgChartTeamIds":team_ids}},
+            json={"attributes": {"orgChartTeamIds": team_ids}},
             token_iam=HEADER["authorization"]
         )
-    
-    def get_staff_id_by_email(self,email):
+
+    def get_staff_id_by_email(self, email):
         return call_api(
             f"https://id-admin-dgl.vnpayapis.com/api/v1.0/users?page=1&size=10&email={email}",
             token_iam=HEADER["authorization"]
